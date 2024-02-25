@@ -1,12 +1,12 @@
 import httpStatus from 'http-status';
 import AppError from '../../errors/AppError';
-import { ProductModel } from '../Product/product.model';
+import { Product } from '../Product/product.model';
 import { TSaleInfo } from './saleInfo.interface';
 import mongoose from 'mongoose';
 import { SaleInfoModel } from './saleInfo.model';
 
 const createSaleInfoIntoDB = async (saleInfo: TSaleInfo) => {
-    const isProductExist = await ProductModel.findById(saleInfo.productId);
+    const isProductExist = await Product.findById(saleInfo.productId);
     if (!isProductExist) {
         throw new AppError(httpStatus.NOT_FOUND, 'Product not found');
     }
@@ -21,7 +21,7 @@ const createSaleInfoIntoDB = async (saleInfo: TSaleInfo) => {
     try {
         await session.startTransaction();
 
-        const reduceProductQuantity = await ProductModel.findByIdAndUpdate(
+        const reduceProductQuantity = await Product.findByIdAndUpdate(
             saleInfo.productId,
             { $inc: { quantity: -saleInfo.quantity } },
             { new: true, session },

@@ -2,15 +2,16 @@
 import httpStatus from 'http-status';
 import AppError from '../../errors/AppError';
 import { TProduct, TProductQuery } from './product.interface';
-import { ProductModel } from './product.model';
+import { Product } from './product.model';
 import { CategoryModel } from '../Category/category.model';
 import { BrandModel } from '../Brand/brand.model';
 import { OccasionModel } from '../Occasion/occasion.model';
 import { ThemeModel } from '../Theme/theme.model';
+import { sendImageToCloudinary } from '../../utils/sendImageToCloudinary';
 
-const createProductIntoDB = async (product: TProduct) => {
-    const isProductExist = await ProductModel.findOne({
-        name: product.name,
+const createProductIntoDB = async (file: any, payload: TProduct) => {
+    const isProductExist = await Product.findOne({
+        name: payload.name,
         isDeleted: false,
     });
     if (isProductExist) {
@@ -20,39 +21,49 @@ const createProductIntoDB = async (product: TProduct) => {
         );
     }
 
-    const isCategoryExist = await CategoryModel.findOne({
-        _id: product.category,
+    const isCategoryExist = await CategoryModel.find({
+        _id: { $in: payload.category },
         isDeleted: false,
     });
-    if (!isCategoryExist) {
+    if (
+        !isCategoryExist ||
+        isCategoryExist.length !== payload.category.length
+    ) {
         throw new AppError(httpStatus.NOT_FOUND, 'Category not found');
     }
 
     const isBrandExist = await BrandModel.findOne({
-        _id: product.brand,
+        _id: payload.brand,
         isDeleted: false,
     });
     if (!isBrandExist) {
         throw new AppError(httpStatus.NOT_FOUND, 'Brand not found');
     }
 
-    const isOccasionExist = await OccasionModel.findOne({
-        _id: product.occasion,
+    const isOccasionExist = await OccasionModel.find({
+        _id: {
+            $in: payload.occasion,
+        },
         isDeleted: false,
     });
-    if (!isOccasionExist) {
+    if (
+        !isOccasionExist ||
+        isOccasionExist.length !== payload.occasion.length
+    ) {
         throw new AppError(httpStatus.NOT_FOUND, 'Occasion not found');
     }
 
-    const isThemeExist = await ThemeModel.findOne({
-        _id: product.theme,
+    const isThemeExist = await ThemeModel.find({
+        _id: {
+            $in: payload.theme,
+        },
         isDeleted: false,
     });
-    if (!isThemeExist) {
+    if (!isThemeExist || isThemeExist.length !== payload.theme.length) {
         throw new AppError(httpStatus.NOT_FOUND, 'Theme not found');
     }
 
-    const result = await ProductModel.create(product);
+    const result = await Product.create(payload);
 
     if (!result) {
         throw new AppError(
@@ -61,7 +72,26 @@ const createProductIntoDB = async (product: TProduct) => {
         );
     }
 
-    return result;
+    let imageURL;
+    if (file && result) {
+        const imageName = `gift_shop_product_${result._id}_${payload?.name}`;
+        const { secure_url } = (await sendImageToCloudinary(
+            imageName,
+            file?.path,
+        )) as { secure_url: string };
+
+        imageURL = secure_url as string;
+    }
+
+    const update = await Product.findByIdAndUpdate(
+        result._id,
+        {
+            imageURL: imageURL,
+        },
+        { new: true },
+    );
+
+    return update;
 };
 
 const getAllProductsFromDB = async (query: TProductQuery) => {
@@ -70,13 +100,20 @@ const getAllProductsFromDB = async (query: TProductQuery) => {
         quantity: { $gt: 0 },
     };
     if (query.category && query.category) {
-        const result = await CategoryModel.findById(query.category);
-        if (!result) {
+        const result = await CategoryModel.find({
+            _id: {
+                $in: query.category,
+            },
+            isDeleted: false,
+        });
+        if (!result || result.length !== query.category.length) {
             throw new AppError(httpStatus.NOT_FOUND, 'Category not found');
         }
         queryBuilder = {
             ...queryBuilder,
-            category: query.category,
+            category: {
+                $in: query.category,
+            },
         };
     }
     if (query.brand && query.brand) {
@@ -91,38 +128,52 @@ const getAllProductsFromDB = async (query: TProductQuery) => {
     }
 
     if (query.occasion && query.occasion) {
-        const result = await OccasionModel.findById(query.occasion);
-        if (!result) {
+        const result = await OccasionModel.find({
+            _id: {
+                $in: query.occasion,
+            },
+            isDeleted: false,
+        });
+        if (!result || result.length !== query.occasion.length) {
             throw new AppError(httpStatus.NOT_FOUND, 'Occasion not found');
         }
         queryBuilder = {
             ...queryBuilder,
-            occasion: query.occasion,
+            occasion: {
+                $in: query.occasion,
+            },
         };
     }
 
     if (query.theme && query.theme) {
-        const result = await ThemeModel.findById(query.theme);
-        if (!result) {
+        const result = await ThemeModel.find({
+            _id: {
+                $in: query.theme,
+            },
+            isDeleted: false,
+        });
+        if (!result || result.length !== query.theme.length) {
             throw new AppError(httpStatus.NOT_FOUND, 'Theme not found');
         }
         queryBuilder = {
             ...queryBuilder,
-            theme: query.theme,
+            theme: {
+                $in: query.theme,
+            },
         };
     }
 
-    if (query.minPrice && parseFloat(String(query.minPrice)) >= 0) {
+    if (query.minPrice && Number(String(query.minPrice)) >= 0) {
         queryBuilder.price = {
             ...queryBuilder.price,
-            $gte: parseFloat(String(query.minPrice)),
+            $gte: Number(String(query.minPrice)),
         };
     }
 
-    if (query.maxPrice && parseFloat(String(query.maxPrice)) >= 0) {
+    if (query.maxPrice && Number(String(query.maxPrice)) >= 0) {
         queryBuilder.price = {
             ...queryBuilder.price,
-            $lte: parseFloat(String(query.maxPrice)),
+            $lte: Number(String(query.maxPrice)),
         };
     }
 
@@ -136,7 +187,7 @@ const getAllProductsFromDB = async (query: TProductQuery) => {
         };
     }
 
-    const result = await ProductModel.find(queryBuilder)
+    const result = await Product.find(queryBuilder)
         .populate('category')
         .populate('brand')
         .populate('occasion')
@@ -145,7 +196,7 @@ const getAllProductsFromDB = async (query: TProductQuery) => {
 };
 
 const getProductByIdFromDB = async (productId: string) => {
-    const result = await ProductModel.findById(productId);
+    const result = await Product.findById(productId);
     if (!result) {
         throw new AppError(httpStatus.NOT_FOUND, 'Product not found');
     }
@@ -153,14 +204,14 @@ const getProductByIdFromDB = async (productId: string) => {
 };
 
 const removeProductFromDB = async (productId: string) => {
-    const isProductExist = await ProductModel.findOne({
+    const isProductExist = await Product.findOne({
         _id: productId,
         isDeleted: false,
     });
     if (!isProductExist) {
         throw new AppError(httpStatus.NOT_FOUND, 'Product not found');
     }
-    const result = await ProductModel.findByIdAndUpdate(
+    const result = await Product.findByIdAndUpdate(
         productId,
         { isDeleted: true },
         { new: true },
@@ -174,14 +225,14 @@ const removeProductFromDB = async (productId: string) => {
 };
 
 const removeProductsFromDB = async (productIds: string[]) => {
-    const isProductExist = await ProductModel.find({
+    const isProductExist = await Product.find({
         _id: { $in: productIds },
         isDeleted: false,
     });
     if (!isProductExist) {
         throw new AppError(httpStatus.NOT_FOUND, 'Product not found');
     }
-    const result = await ProductModel.updateMany(
+    const result = await Product.updateMany(
         { _id: { $in: productIds } },
         { isDeleted: true },
     );
@@ -198,13 +249,13 @@ const updateProductFromDB = async (
     productId: string,
     payload: Partial<TProduct>,
 ) => {
-    const isProductExist = await ProductModel.findById(productId);
+    const isProductExist = await Product.findById(productId);
     if (!isProductExist) {
         throw new AppError(httpStatus.NOT_FOUND, 'Product not found');
     }
 
     if (payload.name && payload.name !== isProductExist.name) {
-        const isNameUnique = await ProductModel.findOne({
+        const isNameUnique = await Product.findOne({
             name: payload.name,
             isDeleted: false,
         });
@@ -244,7 +295,7 @@ const updateProductFromDB = async (
         }
     }
 
-    const result = await ProductModel.findByIdAndUpdate(productId, payload, {
+    const result = await Product.findByIdAndUpdate(productId, payload, {
         new: true,
     });
     if (!result) {

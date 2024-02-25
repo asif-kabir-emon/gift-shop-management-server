@@ -28,7 +28,7 @@ const productSchema = new Schema<TProduct>(
             default: '',
         },
         category: {
-            type: Schema.Types.ObjectId,
+            type: [Schema.Types.ObjectId],
             ref: 'categories',
             required: true,
         },
@@ -38,12 +38,12 @@ const productSchema = new Schema<TProduct>(
             required: true,
         },
         occasion: {
-            type: Schema.Types.ObjectId,
+            type: [Schema.Types.ObjectId],
             ref: 'occasions',
             required: true,
         },
         theme: {
-            type: Schema.Types.ObjectId,
+            type: [Schema.Types.ObjectId],
             ref: 'themes',
             required: true,
         },
@@ -55,4 +55,4 @@ const productSchema = new Schema<TProduct>(
     { timestamps: true },
 );
 
-export const ProductModel = model<TProduct>('products', productSchema);
+export const Product = model<TProduct>('products', productSchema);

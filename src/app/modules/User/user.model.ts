@@ -15,7 +15,7 @@ const userSchema = new Schema<TUser>(
         },
         role: {
             type: String,
-            default: 'user',
+            default: 'seller',
         },
         password: {
             type: String,

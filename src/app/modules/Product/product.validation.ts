@@ -26,9 +26,11 @@ const createProductValidationSchema = z.object({
             .max(255),
         imageURL: z.string().min(1).max(255).optional(),
         category: z
-            .string({
-                required_error: 'Product category is required',
-            })
+            .array(
+                z.string({
+                    required_error: 'Product category is required',
+                }),
+            )
             .min(1)
             .max(255),
         brand: z
@@ -38,15 +40,19 @@ const createProductValidationSchema = z.object({
             .min(1)
             .max(255),
         occasion: z
-            .string({
-                required_error: 'Product occasion is required',
-            })
+            .array(
+                z.string({
+                    required_error: 'Product occasion is required',
+                }),
+            )
             .min(1)
             .max(255),
         theme: z
-            .string({
-                required_error: 'Product theme is required',
-            })
+            .array(
+                z.string({
+                    required_error: 'Product theme is required',
+                }),
+            )
             .min(1)
             .max(255),
     }),

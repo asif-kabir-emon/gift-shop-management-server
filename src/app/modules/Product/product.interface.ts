@@ -6,10 +6,10 @@ export type TProduct = {
     quantity: number;
     description: string;
     imageURL?: string;
-    category: Schema.Types.ObjectId;
+    category: Schema.Types.ObjectId[];
     brand: Schema.Types.ObjectId;
-    occasion: Schema.Types.ObjectId;
-    theme: Schema.Types.ObjectId;
+    occasion: Schema.Types.ObjectId[];
+    theme: Schema.Types.ObjectId[];
     isDeleted: boolean;
 };
 
