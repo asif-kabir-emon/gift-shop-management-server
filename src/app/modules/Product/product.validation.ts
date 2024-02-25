@@ -65,10 +65,10 @@ const updateProductValidationSchema = z.object({
         quantity: z.number().min(0).optional(),
         description: z.string().min(1).max(255).optional(),
         imageURL: z.string().min(1).max(255).optional(),
-        category: z.string().min(1).max(255).optional(),
+        category: z.array(z.string()).min(1).max(255).optional(),
         brand: z.string().min(1).max(255).optional(),
-        occasion: z.string().min(1).max(255).optional(),
-        theme: z.string().min(1).max(255).optional(),
+        occasion: z.array(z.string()).min(1).max(255).optional(),
+        theme: z.array(z.string()).min(1).max(255).optional(),
     }),
 });
 
