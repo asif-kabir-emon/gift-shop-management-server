@@ -7,6 +7,7 @@ import { ThemeRoutes } from '../modules/Theme/theme.route';
 import { BrandRoutes } from '../modules/Brand/brand.route';
 import { ProductRoutes } from '../modules/Product/product.route';
 import { SaleInfoRoutes } from '../modules/SellInfo/sellInfo.route';
+import { CouponRoutes } from '../modules/Coupon/coupon.route';
 
 const router = Router();
 
@@ -42,6 +43,10 @@ const moduleRoutes = [
     {
         path: '/sale-info',
         route: SaleInfoRoutes,
+    },
+    {
+        path: '/coupon',
+        route: CouponRoutes,
     },
 ];
 
