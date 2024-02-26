@@ -2,7 +2,10 @@ import { Schema } from 'mongoose';
 
 export type TSaleInfo = {
     quantity: number;
-    productId: Schema.Types.ObjectId;
-    sellId: Schema.Types.ObjectId;
+    sellingPrice: number;
+    totalAmount: number;
     buyerName: string;
+    sellDate: Date;
+    productId: Schema.Types.ObjectId;
+    sellerId: Schema.Types.ObjectId;
 };

@@ -7,18 +7,31 @@ const saleInfoSchema = new Schema<TSaleInfo>(
             type: Number,
             required: true,
         },
+        sellingPrice: {
+            type: Number,
+            required: true,
+        },
+        totalAmount: {
+            type: Number,
+            required: true,
+        },
+        buyerName: {
+            type: String,
+            required: true,
+        },
+        sellDate: {
+            type: Date,
+            required: true,
+            format: 'date',
+        },
         productId: {
             type: Schema.Types.ObjectId,
             ref: 'products',
             required: true,
         },
-        sellId: {
+        sellerId: {
             type: Schema.Types.ObjectId,
             ref: 'users',
-            required: true,
-        },
-        buyerName: {
-            type: String,
             required: true,
         },
     },

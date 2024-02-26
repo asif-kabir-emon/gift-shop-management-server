@@ -4,10 +4,11 @@ import { Product } from '../Product/product.model';
 import { TSaleInfo } from './sellInfo.interface';
 import mongoose from 'mongoose';
 import { SaleInfoModel } from './sellInfo.model';
+import { UserModel } from '../User/user.model';
 
 const createSaleInfoIntoDB = async (saleInfo: TSaleInfo) => {
     const isProductExist = await Product.findById(saleInfo.productId);
-    const isSellExist = await SaleInfoModel.findById(saleInfo.sellId);
+    const isSellExist = await UserModel.findById(saleInfo.sellerId);
 
     if (!isProductExist) {
         throw new AppError(httpStatus.BAD_REQUEST, 'Product not found');
@@ -66,13 +67,13 @@ const getSaleInfoFromDB = async (payload: {
             },
         })
             .populate('productId')
-            .populate('sellId')
+            .populate('sellerId')
             .sort({ createdAt: -1 });
         return result;
     } else {
         const result = await SaleInfoModel.find()
             .populate('productId')
-            .populate('sellId')
+            .populate('sellerId')
             .sort({ createdAt: -1 });
         return result;
     }
