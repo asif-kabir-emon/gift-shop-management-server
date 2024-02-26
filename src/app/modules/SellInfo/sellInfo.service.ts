@@ -60,10 +60,14 @@ const getSaleInfoFromDB = async (payload: {
     endDate?: string;
 }) => {
     if (payload.startDate && payload.endDate) {
+        const startDateObj = new Date(payload.startDate);
+        const endDateObj = new Date(payload.endDate);
+        endDateObj.setHours(23, 59, 59, 0);
+
         const result = await SaleInfoModel.find({
             createdAt: {
-                $gte: new Date(payload.startDate),
-                $lte: new Date(payload.endDate),
+                $gte: startDateObj,
+                $lte: endDateObj,
             },
         })
             .populate('productId')
