@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { TSaleInfo } from './saleInfo.interface';
+import { TSaleInfo } from './sellInfo.interface';
 
 const saleInfoSchema = new Schema<TSaleInfo>(
     {
@@ -10,6 +10,11 @@ const saleInfoSchema = new Schema<TSaleInfo>(
         productId: {
             type: Schema.Types.ObjectId,
             ref: 'products',
+            required: true,
+        },
+        sellId: {
+            type: Schema.Types.ObjectId,
+            ref: 'users',
             required: true,
         },
         buyerName: {

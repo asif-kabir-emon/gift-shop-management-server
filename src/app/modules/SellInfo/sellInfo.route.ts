@@ -1,7 +1,7 @@
 import express from 'express';
-import { SaleInfoControllers } from './saleInfo.controller';
+import { SaleInfoControllers } from './sellInfo.controller';
 import validateRequest from '../../middlewares/validateRequest';
-import { saleInfoValidations } from './saleInfo.validation';
+import { saleInfoValidations } from './sellInfo.validation';
 
 const router = express.Router();
 

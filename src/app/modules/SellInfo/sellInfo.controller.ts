@@ -1,7 +1,7 @@
 import httpStatus from 'http-status';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
-import { SaleInfoServices } from './saleInfo.service';
+import { SaleInfoServices } from './sellInfo.service';
 
 const createSaleInfo = catchAsync(async (req, res) => {
     const result = await SaleInfoServices.createSaleInfoIntoDB(req.body);

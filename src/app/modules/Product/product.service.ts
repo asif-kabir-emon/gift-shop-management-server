@@ -100,71 +100,45 @@ const getAllProductsFromDB = async (query: TProductQuery) => {
         quantity: { $gt: 0 },
     };
     if (query.category && query.category) {
-        const result = await CategoryModel.find({
-            _id: {
-                $in: query.category,
-            },
-            isDeleted: false,
-        });
-        if (!result || result.length !== query.category.length) {
+        const result = await CategoryModel.findById(query.category);
+        if (!result) {
             throw new AppError(httpStatus.NOT_FOUND, 'Category not found');
         }
         queryBuilder = {
             ...queryBuilder,
-            category: {
-                $in: query.category,
-            },
+            category: query.category,
         };
     }
     if (query.brand && query.brand) {
-        const result = await BrandModel.find({
-            _id: query.brand,
-            isDeleted: false,
-        });
-        if (!result || result.length !== query.brand.length) {
+        const result = await BrandModel.findById(query.brand);
+        if (!result) {
             throw new AppError(httpStatus.NOT_FOUND, 'Brand not found');
         }
         queryBuilder = {
             ...queryBuilder,
-            brand: {
-                $in: query.brand,
-            },
+            brand: query.brand,
         };
     }
 
     if (query.occasion && query.occasion) {
-        const result = await OccasionModel.find({
-            _id: {
-                $in: query.occasion,
-            },
-            isDeleted: false,
-        });
-        if (!result || result.length !== query.occasion.length) {
+        const result = await OccasionModel.findById(query.occasion);
+        if (!result) {
             throw new AppError(httpStatus.NOT_FOUND, 'Occasion not found');
         }
         queryBuilder = {
             ...queryBuilder,
-            occasion: {
-                $in: query.occasion,
-            },
+            occasion: query.occasion,
         };
     }
 
     if (query.theme && query.theme) {
-        const result = await ThemeModel.find({
-            _id: {
-                $in: query.theme,
-            },
-            isDeleted: false,
-        });
-        if (!result || result.length !== query.theme.length) {
+        const result = await ThemeModel.findById(query.theme);
+        if (!result) {
             throw new AppError(httpStatus.NOT_FOUND, 'Theme not found');
         }
         queryBuilder = {
             ...queryBuilder,
-            theme: {
-                $in: query.theme,
-            },
+            theme: query.theme,
         };
     }
 

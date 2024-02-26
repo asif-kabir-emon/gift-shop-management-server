@@ -6,7 +6,7 @@ import { OccasionRoutes } from '../modules/Occasion/occasion.route';
 import { ThemeRoutes } from '../modules/Theme/theme.route';
 import { BrandRoutes } from '../modules/Brand/brand.route';
 import { ProductRoutes } from '../modules/Product/product.route';
-import { SaleInfoRoutes } from '../modules/SaleInfo/saleInfo.route';
+import { SaleInfoRoutes } from '../modules/SellInfo/sellInfo.route';
 
 const router = Router();
 
