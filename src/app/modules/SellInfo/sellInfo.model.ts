@@ -15,6 +15,19 @@ const saleInfoSchema = new Schema<TSaleInfo>(
             type: Number,
             required: true,
         },
+        discount: {
+            type: Number,
+            required: true,
+        },
+        paidAmount: {
+            type: Number,
+            required: true,
+        },
+        couponCode: {
+            type: String,
+            required: false,
+            default: null,
+        },
         buyerName: {
             type: String,
             required: true,

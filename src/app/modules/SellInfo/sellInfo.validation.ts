@@ -22,6 +22,21 @@ const createSaleInfoValidationSchema = z.object({
                 .refine((data) => data > 0, {
                     message: 'Total amount should be greater than 0',
                 }),
+            discount: z
+                .number({
+                    required_error: 'Discount is required',
+                })
+                .refine((data) => data >= 0, {
+                    message: 'Discount should be greater than or equal to 0',
+                }),
+            paidAmount: z
+                .number({
+                    required_error: 'Paid amount is required',
+                })
+                .refine((data) => data > 0, {
+                    message: 'Paid amount should be greater than 0',
+                }),
+            couponCode: z.string().optional(),
             buyerName: z.string({
                 required_error: 'Buyer name is required',
             }),
