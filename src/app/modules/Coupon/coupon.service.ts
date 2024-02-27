@@ -1,6 +1,6 @@
 import httpStatus from 'http-status';
 import AppError from '../../errors/AppError';
-import { TCoupon } from './coupon.interface';
+import { TCoupon, TVerifyCoupon } from './coupon.interface';
 import { CouponModel } from './coupon.model';
 
 const createCouponIntoDB = async (payload: TCoupon) => {
@@ -67,10 +67,61 @@ const deleteCouponFromDB = async (id: string) => {
     return result;
 };
 
+const verifyCouponFromDB = async (payload: TVerifyCoupon) => {
+    const currentDate = new Date().toISOString().split('T')[0];
+
+    const isCouponValid = await CouponModel.find({
+        code: payload.code.toUpperCase(),
+        expiryDate: { $gte: currentDate },
+        isDeleted: false,
+    });
+
+    if (isCouponValid.length === 0) {
+        throw new AppError(httpStatus.BAD_REQUEST, 'Coupon is not valid!!!');
+    }
+
+    const coupon = isCouponValid[0];
+    let discountAmount = 0;
+
+    if (coupon.startDate > currentDate || coupon.expiryDate < currentDate) {
+        throw new AppError(httpStatus.BAD_REQUEST, 'Coupon is not valid!!!');
+    }
+
+    if (coupon.minOrder > payload.orderAmount) {
+        discountAmount = 0;
+    } else if (coupon.haveMaxDiscount === true && coupon.maxDiscount) {
+        if (coupon.discountType === 'percentage') {
+            const tempDiscountAmount =
+                (payload.orderAmount * coupon.discountAmount) / 100;
+
+            if (tempDiscountAmount > coupon.maxDiscount) {
+                discountAmount = coupon.maxDiscount;
+            } else {
+                discountAmount = tempDiscountAmount;
+            }
+        } else {
+            discountAmount = coupon.discountAmount;
+        }
+    } else {
+        if (coupon.discountType === 'percentage') {
+            discountAmount =
+                (payload.orderAmount * coupon.discountAmount) / 100;
+        } else {
+            discountAmount = coupon.discountAmount;
+        }
+    }
+
+    return {
+        isCouponValid: true,
+        discountAmount,
+    };
+};
+
 export const CouponServices = {
     createCouponIntoDB,
     getAllCouponsFromDB,
     getCouponByIdFromDB,
     updateCouponIntoDB,
     deleteCouponFromDB,
+    verifyCouponFromDB,
 };

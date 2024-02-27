@@ -56,7 +56,23 @@ const updateCouponValidationSchema = z.object({
     }),
 });
 
+const verifyCouponValidationSchema = z.object({
+    body: z.object({
+        code: z.string({
+            required_error: 'Coupon Code is required',
+        }),
+        orderAmount: z
+            .number({
+                required_error: 'Order Amount is required',
+            })
+            .refine((val) => Number(val) > 0, {
+                message: 'Order Amount must be greater than 0',
+            }),
+    }),
+});
+
 export const couponValidations = {
     createCouponValidationSchema,
     updateCouponValidationSchema,
+    verifyCouponValidationSchema,
 };

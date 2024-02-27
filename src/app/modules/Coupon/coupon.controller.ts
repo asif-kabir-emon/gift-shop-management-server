@@ -61,10 +61,22 @@ const deleteCoupon = catchAsync(async (req, res) => {
     });
 });
 
+const verifyCoupon = catchAsync(async (req, res) => {
+    const result = await CouponServices.verifyCouponFromDB(req.body);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Coupon verified successfully.',
+        data: result,
+    });
+});
+
 export const CouponControllers = {
     createCoupon,
     getAllCoupons,
     getCouponById,
     updateCoupon,
     deleteCoupon,
+    verifyCoupon,
 };

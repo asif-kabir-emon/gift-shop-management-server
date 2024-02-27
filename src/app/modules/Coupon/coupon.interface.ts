@@ -9,3 +9,8 @@ export type TCoupon = {
     expiryDate: string;
     isDeleted?: boolean;
 };
+
+export type TVerifyCoupon = {
+    code: string;
+    orderAmount: number;
+};

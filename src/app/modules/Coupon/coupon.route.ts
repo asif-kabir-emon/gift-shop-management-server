@@ -2,6 +2,7 @@ import express from 'express';
 import validateRequest from '../../middlewares/validateRequest';
 import { couponValidations } from './coupon.validation';
 import { CouponControllers } from './coupon.controller';
+import auth from '../../middlewares/Auth';
 
 const router = express.Router();
 
@@ -22,5 +23,12 @@ router.put(
 );
 
 router.delete('/delete-coupon/:id', CouponControllers.deleteCoupon);
+
+router.post(
+    '/verify-coupon',
+    auth(),
+    validateRequest(couponValidations.verifyCouponValidationSchema),
+    CouponControllers.verifyCoupon,
+);
 
 export const CouponRoutes = router;
