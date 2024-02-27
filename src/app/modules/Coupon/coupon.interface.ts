@@ -5,7 +5,7 @@ export type TCoupon = {
     minOrder: number;
     haveMaxDiscount: boolean;
     maxDiscount?: number;
-    startDate: Date;
-    expiryDate: Date;
+    startDate: string;
+    expiryDate: string;
     isDeleted?: boolean;
 };

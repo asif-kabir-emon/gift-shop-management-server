@@ -6,7 +6,6 @@ const couponSchema = new Schema<TCoupon>(
         code: {
             type: String,
             required: true,
-            unique: true,
         },
         discountType: {
             type: String,
@@ -30,11 +29,11 @@ const couponSchema = new Schema<TCoupon>(
             default: null,
         },
         startDate: {
-            type: Date,
+            type: String,
             required: true,
         },
         expiryDate: {
-            type: Date,
+            type: String,
             required: true,
         },
         isDeleted: {

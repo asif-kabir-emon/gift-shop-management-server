@@ -50,9 +50,21 @@ const updateCoupon = catchAsync(async (req, res) => {
     });
 });
 
+const deleteCoupon = catchAsync(async (req, res) => {
+    const result = await CouponServices.deleteCouponFromDB(req.params.id);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Coupon deleted successfully.',
+        data: result,
+    });
+});
+
 export const CouponControllers = {
     createCoupon,
     getAllCoupons,
     getCouponById,
     updateCoupon,
+    deleteCoupon,
 };

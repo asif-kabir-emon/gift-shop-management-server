@@ -11,14 +11,16 @@ router.post(
     CouponControllers.createCoupon,
 );
 
-router.get('/get-coupons', CouponControllers.getAllCoupons);
+router.get('/', CouponControllers.getAllCoupons);
 
-router.get('/get-coupon/:id', CouponControllers.getCouponById);
+router.get('/:id', CouponControllers.getCouponById);
 
 router.put(
     '/update-coupon/:id',
     validateRequest(couponValidations.createCouponValidationSchema),
     CouponControllers.updateCoupon,
 );
+
+router.delete('/delete-coupon/:id', CouponControllers.deleteCoupon);
 
 export const CouponRoutes = router;

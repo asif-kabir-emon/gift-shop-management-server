@@ -1,45 +1,36 @@
 import { z } from 'zod';
 
 const createCouponValidationSchema = z.object({
-    body: z
-        .object({
-            code: z.string({
-                required_error: 'Coupon Name is required',
+    body: z.object({
+        code: z.string({
+            required_error: 'Coupon Name is required',
+        }),
+        discountType: z.enum(['percentage', 'fixed']),
+        discountAmount: z
+            .number({
+                required_error: 'Discount Amount is required',
+            })
+            .refine((val) => Number(val) > 0, {
+                message: 'Discount Amount must be greater than 0',
             }),
-            discountType: z.enum(['percentage', 'fixed']),
-            discountAmount: z
-                .number({
-                    required_error: 'Discount Amount is required',
-                })
-                .refine((val) => Number(val) > 0, {
-                    message: 'Discount Amount must be greater than 0',
-                }),
-            minOrder: z
-                .number({
-                    required_error: 'Minimum Order is required',
-                })
-                .refine((val) => Number(val) > 0, {
-                    message: 'Minimum Order must be greater than 0',
-                }),
-            haveMaxDiscount: z.boolean({
-                required_error: 'Have Maximum Discount is required',
+        minOrder: z
+            .number({
+                required_error: 'Minimum Order is required',
+            })
+            .refine((val) => Number(val) > 0, {
+                message: 'Minimum Order must be greater than 0',
             }),
-            maxDiscount: z.number().optional(),
-            startDate: z.string({
-                required_error: 'Start Date is required',
-            }),
-            expiryDate: z.string({
-                required_error: 'Expiry Date is required',
-            }),
-        })
-        .refine(
-            (val) =>
-                val.discountType === 'percentage' && val.discountAmount <= 100,
-            {
-                message:
-                    'Discount Amount must be less than 100 for percentage discount',
-            },
-        ),
+        haveMaxDiscount: z.boolean({
+            required_error: 'Have Maximum Discount is required',
+        }),
+        maxDiscount: z.number().optional(),
+        startDate: z.string({
+            required_error: 'Start Date is required',
+        }),
+        expiryDate: z.string({
+            required_error: 'Expiry Date is required',
+        }),
+    }),
 });
 
 const updateCouponValidationSchema = z.object({
