@@ -8,6 +8,7 @@ import { BrandRoutes } from '../modules/Brand/brand.route';
 import { ProductRoutes } from '../modules/Product/product.route';
 import { SaleInfoRoutes } from '../modules/SellInfo/sellInfo.route';
 import { CouponRoutes } from '../modules/Coupon/coupon.route';
+import { InvoiceRoutes } from '../modules/Invoice/Invoice.route';
 
 const router = Router();
 
@@ -47,6 +48,10 @@ const moduleRoutes = [
     {
         path: '/coupon',
         route: CouponRoutes,
+    },
+    {
+        path: '/invoice',
+        route: InvoiceRoutes,
     },
 ];
 

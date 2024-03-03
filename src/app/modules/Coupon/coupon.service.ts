@@ -39,6 +39,25 @@ const getCouponByIdFromDB = async (id: string) => {
     return result;
 };
 
+const getCouponByCodeFromDB = async (code: string) => {
+    const currentDate = new Date().toISOString().split('T')[0];
+
+    const result = await CouponModel.findOne({
+        code: code.toUpperCase(),
+        isDeleted: false,
+    });
+
+    if (!result) {
+        throw new AppError(httpStatus.BAD_REQUEST, 'Coupon is not valid!!!');
+    }
+
+    if (result.startDate > currentDate || result.expiryDate < currentDate) {
+        throw new AppError(httpStatus.BAD_REQUEST, 'Coupon is not valid!!!');
+    }
+
+    return result;
+};
+
 const updateCouponIntoDB = async (id: string, payload: Partial<TCoupon>) => {
     const result = await CouponModel.findByIdAndUpdate(id, payload, {
         new: true,
@@ -121,6 +140,7 @@ export const CouponServices = {
     createCouponIntoDB,
     getAllCouponsFromDB,
     getCouponByIdFromDB,
+    getCouponByCodeFromDB,
     updateCouponIntoDB,
     deleteCouponFromDB,
     verifyCouponFromDB,

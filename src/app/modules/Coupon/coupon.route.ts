@@ -16,6 +16,8 @@ router.get('/', CouponControllers.getAllCoupons);
 
 router.get('/:id', CouponControllers.getCouponById);
 
+router.get('/get-coupon/:code', CouponControllers.getCouponByCode);
+
 router.put(
     '/update-coupon/:id',
     validateRequest(couponValidations.createCouponValidationSchema),

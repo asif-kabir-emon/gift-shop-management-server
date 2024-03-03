@@ -36,6 +36,17 @@ const getCouponById = catchAsync(async (req, res) => {
     });
 });
 
+const getCouponByCode = catchAsync(async (req, res) => {
+    const result = await CouponServices.getCouponByCodeFromDB(req.params.code);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Coupon fetched successfully.',
+        data: result,
+    });
+});
+
 const updateCoupon = catchAsync(async (req, res) => {
     const result = await CouponServices.updateCouponIntoDB(
         req.params.id,
@@ -76,6 +87,7 @@ export const CouponControllers = {
     createCoupon,
     getAllCoupons,
     getCouponById,
+    getCouponByCode,
     updateCoupon,
     deleteCoupon,
     verifyCoupon,
