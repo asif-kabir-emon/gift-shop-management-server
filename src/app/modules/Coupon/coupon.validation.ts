@@ -71,8 +71,17 @@ const verifyCouponValidationSchema = z.object({
     }),
 });
 
+const getCouponByNameValidationSchema = z.object({
+    body: z.object({
+        code: z.string({
+            required_error: 'Coupon Code is required',
+        }),
+    }),
+});
+
 export const couponValidations = {
     createCouponValidationSchema,
     updateCouponValidationSchema,
     verifyCouponValidationSchema,
+    getCouponByNameValidationSchema,
 };

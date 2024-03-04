@@ -37,7 +37,8 @@ const getCouponById = catchAsync(async (req, res) => {
 });
 
 const getCouponByCode = catchAsync(async (req, res) => {
-    const result = await CouponServices.getCouponByCodeFromDB(req.params.code);
+    const { code } = req.body;
+    const result = await CouponServices.getCouponByCodeFromDB(code);
 
     sendResponse(res, {
         statusCode: httpStatus.OK,

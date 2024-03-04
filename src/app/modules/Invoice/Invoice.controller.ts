@@ -23,7 +23,18 @@ const getInvoice = catchAsync(async (req, res) => {
     });
 });
 
+const getInvoiceById = catchAsync(async (req, res) => {
+    const result = await InvoiceServices.getInvoiceByIdFromDB(req.params.id);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Get sale info by id successfully',
+        data: result,
+    });
+});
+
 export const InvoiceControllers = {
     createInvoice,
     getInvoice,
+    getInvoiceById,
 };

@@ -82,7 +82,7 @@ const createSaleInfoIntoDB = async (payload: TInvoice) => {
             if (!reduceProductQuantity) {
                 throw new AppError(
                     httpStatus.BAD_REQUEST,
-                    'Failed to buy items',
+                    'Failed to buy items due to product quantity issue',
                 );
             }
         }
@@ -90,19 +90,14 @@ const createSaleInfoIntoDB = async (payload: TInvoice) => {
         const newInvoice = await InvoiceModel.create([payload], {
             session,
         });
-        if (!newInvoice) {
+        if (newInvoice.length === 0) {
             throw new AppError(httpStatus.BAD_REQUEST, 'Failed to buy items');
         }
-
-        const result = await InvoiceModel.findById(newInvoice[0]._id, {
-            session,
-        })
-            .populate('productId')
-            .populate('sellerId');
 
         await session.commitTransaction();
         await session.endSession();
 
+        const result = newInvoice[0];
         return result;
     } catch (error) {
         await session.abortTransaction();
@@ -132,14 +127,27 @@ const getInvoiceFromDB = async (payload: {
         return result;
     } else {
         const result = await InvoiceModel.find()
-            .populate('productId')
+            .populate('products')
             .populate('sellerId')
             .sort({ createdAt: -1 });
         return result;
     }
 };
 
+const getInvoiceByIdFromDB = async (id: string) => {
+    const result = await InvoiceModel.findById(id)
+        .populate('products')
+        .populate('sellerId');
+
+    if (!result) {
+        throw new AppError(httpStatus.BAD_REQUEST, 'Invoice not found');
+    }
+
+    return result;
+};
+
 export const InvoiceServices = {
     createSaleInfoIntoDB,
     getInvoiceFromDB,
+    getInvoiceByIdFromDB,
 };

@@ -16,7 +16,11 @@ router.get('/', CouponControllers.getAllCoupons);
 
 router.get('/:id', CouponControllers.getCouponById);
 
-router.get('/get-coupon/:code', CouponControllers.getCouponByCode);
+router.post(
+    '/coupon-by-name',
+    validateRequest(couponValidations.getCouponByNameValidationSchema),
+    CouponControllers.getCouponByCode,
+);
 
 router.put(
     '/update-coupon/:id',

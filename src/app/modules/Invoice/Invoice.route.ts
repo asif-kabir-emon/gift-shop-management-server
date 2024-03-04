@@ -13,4 +13,6 @@ router.post(
 
 router.get('/get-invoice', InvoiceControllers.getInvoice);
 
+router.get('/get-invoice/:id', InvoiceControllers.getInvoiceById);
+
 export const InvoiceRoutes = router;
