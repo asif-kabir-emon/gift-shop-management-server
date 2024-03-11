@@ -118,32 +118,40 @@ const getInvoiceFromDB = async (query: Record<string, unknown>) => {
             endDateObj,
             sort: '-createdAt',
             page: (query?.page as number) || 1,
-            limit: (query?.limit as number) || 1,
+            limit: (query?.limit as number) || 10,
         })
             .sort()
             .paginate();
 
+        const meta = await invoiceQuery.countTotal();
         const result = await invoiceQuery.modelQuery
             .populate('products')
             .populate('sellerId')
             .sort({ createdAt: -1 });
 
-        return result;
+        return {
+            meta,
+            result,
+        };
     } else {
         const invoiceQuery = new QueryBuilder(InvoiceModel.find(), {
             sort: '-createdAt',
             page: (query?.page as number) || 1,
-            limit: (query?.limit as number) || 1,
+            limit: (query?.limit as number) || 10,
         })
             .sort()
             .paginate();
 
+        const meta = await invoiceQuery.countTotal();
         const result = await invoiceQuery.modelQuery
             .populate('products')
             .populate('sellerId')
             .sort({ createdAt: -1 });
 
-        return result;
+        return {
+            meta,
+            result,
+        };
     }
 };
 

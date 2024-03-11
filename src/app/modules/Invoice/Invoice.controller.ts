@@ -19,7 +19,8 @@ const getInvoice = catchAsync(async (req, res) => {
         statusCode: httpStatus.OK,
         success: true,
         message: 'Get sale info successfully',
-        data: result,
+        meta: result.meta,
+        data: result.result,
     });
 });
 
