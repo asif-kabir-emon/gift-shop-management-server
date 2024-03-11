@@ -6,7 +6,6 @@ import { OccasionRoutes } from '../modules/Occasion/occasion.route';
 import { ThemeRoutes } from '../modules/Theme/theme.route';
 import { BrandRoutes } from '../modules/Brand/brand.route';
 import { ProductRoutes } from '../modules/Product/product.route';
-import { SaleInfoRoutes } from '../modules/SellInfo/sellInfo.route';
 import { CouponRoutes } from '../modules/Coupon/coupon.route';
 import { InvoiceRoutes } from '../modules/Invoice/Invoice.route';
 
@@ -40,10 +39,6 @@ const moduleRoutes = [
     {
         path: '/product',
         route: ProductRoutes,
-    },
-    {
-        path: '/sale-info',
-        route: SaleInfoRoutes,
     },
     {
         path: '/coupon',

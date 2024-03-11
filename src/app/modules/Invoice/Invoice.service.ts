@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from 'http-status';
 import AppError from '../../errors/AppError';
 import { Product } from '../Product/product.model';
@@ -108,51 +109,46 @@ const createSaleInfoIntoDB = async (payload: TInvoice) => {
 };
 
 const getInvoiceFromDB = async (query: Record<string, unknown>) => {
+    let queryBuilder: Record<string, any> = {};
+
     if (query.startDate && query.endDate) {
         const startDateObj = new Date(query.startDate as string);
         const endDateObj = new Date(query.endDate as string);
         endDateObj.setHours(23, 59, 59, 0);
 
-        const invoiceQuery = new QueryBuilder(InvoiceModel.find(), {
-            startDateObj,
-            endDateObj,
-            sort: '-createdAt',
-            page: (query?.page as number) || 1,
-            limit: (query?.limit as number) || 10,
-        })
-            .sort()
-            .paginate();
+        if (endDateObj < startDateObj) {
+            throw new AppError(
+                httpStatus.BAD_REQUEST,
+                'Start Date is greater than End Date',
+            );
+        }
 
-        const meta = await invoiceQuery.countTotal();
-        const result = await invoiceQuery.modelQuery
-            .populate('products')
-            .populate('sellerId')
-            .sort({ createdAt: -1 });
-
-        return {
-            meta,
-            result,
-        };
-    } else {
-        const invoiceQuery = new QueryBuilder(InvoiceModel.find(), {
-            sort: '-createdAt',
-            page: (query?.page as number) || 1,
-            limit: (query?.limit as number) || 10,
-        })
-            .sort()
-            .paginate();
-
-        const meta = await invoiceQuery.countTotal();
-        const result = await invoiceQuery.modelQuery
-            .populate('products')
-            .populate('sellerId')
-            .sort({ createdAt: -1 });
-
-        return {
-            meta,
-            result,
+        queryBuilder = {
+            sellDate: {
+                $gte: startDateObj,
+                $lte: endDateObj,
+            },
         };
     }
+
+    const invoiceQuery = new QueryBuilder(InvoiceModel.find(queryBuilder), {
+        sort: '-createdAt',
+        page: (query?.page as number) || 1,
+        limit: (query?.limit as number) || 10,
+    })
+        .sort()
+        .paginate();
+
+    const meta = await invoiceQuery.countTotal();
+    const result = await invoiceQuery.modelQuery
+        .populate('products')
+        .populate('sellerId')
+        .sort({ createdAt: -1 });
+
+    return {
+        meta,
+        result,
+    };
 };
 
 const getInvoiceByIdFromDB = async (id: string) => {
