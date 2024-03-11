@@ -6,6 +6,7 @@ import mongoose from 'mongoose';
 import { InvoiceModel } from './Invoice.model';
 import { UserModel } from '../User/user.model';
 import { CouponServices } from '../Coupon/coupon.service';
+import QueryBuilder from '../../builder/QueryBuilder';
 
 const createSaleInfoIntoDB = async (payload: TInvoice) => {
     const isSellExist = await UserModel.findById(payload.sellerId);
@@ -106,30 +107,42 @@ const createSaleInfoIntoDB = async (payload: TInvoice) => {
     }
 };
 
-const getInvoiceFromDB = async (payload: {
-    startDate?: string;
-    endDate?: string;
-}) => {
-    if (payload.startDate && payload.endDate) {
-        const startDateObj = new Date(payload.startDate);
-        const endDateObj = new Date(payload.endDate);
+const getInvoiceFromDB = async (query: Record<string, unknown>) => {
+    if (query.startDate && query.endDate) {
+        const startDateObj = new Date(query.startDate as string);
+        const endDateObj = new Date(query.endDate as string);
         endDateObj.setHours(23, 59, 59, 0);
 
-        const result = await InvoiceModel.find({
-            createdAt: {
-                $gte: startDateObj,
-                $lte: endDateObj,
-            },
+        const invoiceQuery = new QueryBuilder(InvoiceModel.find(), {
+            startDateObj,
+            endDateObj,
+            sort: '-createdAt',
+            page: (query?.page as number) || 1,
+            limit: (query?.limit as number) || 1,
         })
-            .populate('productId')
-            .populate('sellerId')
-            .sort({ createdAt: -1 });
-        return result;
-    } else {
-        const result = await InvoiceModel.find()
+            .sort()
+            .paginate();
+
+        const result = await invoiceQuery.modelQuery
             .populate('products')
             .populate('sellerId')
             .sort({ createdAt: -1 });
+
+        return result;
+    } else {
+        const invoiceQuery = new QueryBuilder(InvoiceModel.find(), {
+            sort: '-createdAt',
+            page: (query?.page as number) || 1,
+            limit: (query?.limit as number) || 1,
+        })
+            .sort()
+            .paginate();
+
+        const result = await invoiceQuery.modelQuery
+            .populate('products')
+            .populate('sellerId')
+            .sort({ createdAt: -1 });
+
         return result;
     }
 };
